@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+<h1>Hello World</h1>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}
