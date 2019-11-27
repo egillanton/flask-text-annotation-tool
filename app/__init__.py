@@ -1,23 +1,34 @@
 import os
 
 from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_fontawesome import FontAwesome
+
+from config import Config
 from . import repository as repo
 from . import google
+
+
+db = SQLAlchemy()
+from app.models import Source, Target
 
 def create_app(test_config=None):
     """create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
-    app.secret_key = os.urandom(12)  # Generic key for dev purposes only
+    app.config.from_object(Config)
+    db = SQLAlchemy(app)
+    migrate = Migrate(app, db)
     fa = FontAwesome(app)
-    
+
+   
     # ======== Routing ============================= #
-    # -------- HOME -------------------------------- #
+    # -------- Home -------------------------------- #
     @app.route('/', methods=['GET'])
     def index():
         return render_template('layouts/index.html')
 
-    # -------- SAMPLE -------------------------------- #
+    # -------- Sample -------------------------------- #
     @app.route('/sample', methods=['GET', 'POST'])
     def sample():
         if request.method == 'POST':
@@ -41,7 +52,7 @@ def create_app(test_config=None):
 
         return render_template('expression')
 
-    # -------- TRANSLATE -------------------------------- #
+    # -------- Translate -------------------------------- #
     @app.route('/translate', methods=['POST'])
     def translate():
         source_text = request.json['source_text']
@@ -50,5 +61,12 @@ def create_app(test_config=None):
             translation=translation.lower(),
         )
 
+     # -------- Get Labels -------------------------------- #
+    @app.route('/get_labels', methods=['POST'])
+    def get_labels():
+        lables = []
+        return jsonify(
+            lables=lables,
+        )
 
     return app

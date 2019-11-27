@@ -1,5 +1,3 @@
-
-
 /////////// TRANSLATE ////////////////////////////////////////////////// 
 function translate() {
     var source_tokens = $('#source_tokens').val();
@@ -44,7 +42,9 @@ function autofill_intent() {
     }
 }
 
+$('document').ready(function () {
+    document.getElementById("translate_button").addEventListener("click", translate, false);
+    document.getElementById("autofill_lables_button").addEventListener("click", autofill_lables, false);
+    document.getElementById("autofill_intent_button").addEventListener("click", autofill_intent, false);
+});
 
-document.getElementById("translate_button").addEventListener("click", translate, false);
-document.getElementById("autofill_lables_button").addEventListener("click", autofill_lables, false);
-document.getElementById("autofill_intent_button").addEventListener("click", autofill_intent, false);

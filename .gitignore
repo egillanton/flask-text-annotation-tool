@@ -1,6 +1,10 @@
 venv/
 .vscode/
 
+app.db
+data/target/
+migrations/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
