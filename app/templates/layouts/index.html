@@ -33,8 +33,9 @@ Home - {{ super() }}
                     value="O O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name">
             </div>
             <div class="form-group">
-                <label for="source_int">Intent</label>
-                <input type="text" class="form-control" name="source_int" id="source_int" readonly value="atis_flight">
+                <label for="source_intent">Intent</label>
+                <input type="text" class="form-control" name="source_intent" id="source_intent" readonly
+                    value="atis_flight">
             </div>
         </div>
     </div>
@@ -42,28 +43,26 @@ Home - {{ super() }}
         <div class="col-12">
             <label for="target_tokens">Tokens</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_tokens" id="target_tokens"
-                    value="lista yfir öll flug frá boston til baltimore fyrir klukkan 10 á fimmtudag ">
+                <input type="text" class="form-control" name="target_tokens" id="target_tokens">
                 <div class="input-group-append">
                     <!-- <button type="button" class="btn btn-secondary">Copy Source</button> -->
-                    <button type="button" class="btn btn-primary">Translate</button>
+                    <button type="button" id="translate_button" class="btn btn-primary">Translate</button>
                 </div>
             </div>
 
             <label for="target_lables">Lables</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_lables" id="target_lables"
-                    value="O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name">
+                <input type="text" class="form-control" name="target_lables" id="target_lables">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary">Autofill</button>
+                    <button type="button" id="autofill_lables_button" class="btn btn-primary">Autofill</button>
                 </div>
             </div>
 
-            <label for="target_int">Intent</label>
+            <label for="target_intent">Intent</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_int" id="target_int" value="atis_flight">
+                <input type="text" class="form-control" name="target_intent" id="target_intent">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-primary">Autofill</button>
+                    <button type="button" id="autofill_intent_button" class="btn btn-primary">Autofill</button>
                 </div>
             </div>
         </div>

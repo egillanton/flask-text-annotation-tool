@@ -47,7 +47,7 @@ def create_app(test_config=None):
         source_text = request.json['source_text']
         translation = google.get_translation(source_text)
         return jsonify(
-            response=translation,
+            translation=translation.lower(),
         )
 
 
