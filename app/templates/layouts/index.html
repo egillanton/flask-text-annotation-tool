@@ -6,25 +6,35 @@ Home - {{ super() }}
 
 
 {% block content %}
-<div class="container mt-3 border">
+<div class="container-fluid mt-3">
     <div class="row mb-3">
         <div class="col-12">
             <h1 class="text-center">Text Annotation Tool</h1>
         </div>
     </div>
     <div class="row mb-3">
+        <div class="col-2">
+            <progress max="100" class="progress-bar" value="17" style="width:100%"></progress>
+        </div>
+        <div class="col-10 pl-0">
+            <span class="ml10"><strong>1</strong></span>/<span>6</span>
+        </div>
+    </div>
+    <div class="row mb-3">
         <div class="col-12 border-bottom">
             <div class="form-group">
                 <label for="source_tokens">Tokens</label>
-                <input type="text" class="form-control" name="source_tokens" id="source_tokens" readonly>
+                <input type="text" class="form-control" name="source_tokens" id="source_tokens" readonly
+                    value="a listing of all flights from boston to baltimore before 10 am on thursday">
             </div>
             <div class="form-group">
                 <label for="source_lables">Lables</label>
-                <input type="text" class="form-control" name="source_lables" id="source_lables" readonly>
+                <input type="text" class="form-control" name="source_lables" id="source_lables" readonly
+                    value="O O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name">
             </div>
             <div class="form-group">
                 <label for="source_int">Intent</label>
-                <input type="text" class="form-control" name="source_int" id="source_int" readonly>
+                <input type="text" class="form-control" name="source_int" id="source_int" readonly value="atis_flight">
             </div>
         </div>
     </div>
@@ -32,16 +42,18 @@ Home - {{ super() }}
         <div class="col-12">
             <label for="target_tokens">Tokens</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_tokens" id="target_tokens">
+                <input type="text" class="form-control" name="target_tokens" id="target_tokens"
+                    value="lista yfir öll flug frá boston til baltimore fyrir klukkan 10 á fimmtudag ">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-secondary">Copy Source</button>
+                    <!-- <button type="button" class="btn btn-secondary">Copy Source</button> -->
                     <button type="button" class="btn btn-primary">Translate</button>
                 </div>
             </div>
 
             <label for="target_lables">Lables</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_lables" id="target_lables">
+                <input type="text" class="form-control" name="target_lables" id="target_lables"
+                    value="O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name">
                 <div class="input-group-append">
                     <button type="button" class="btn btn-primary">Autofill</button>
                 </div>
@@ -49,7 +61,7 @@ Home - {{ super() }}
 
             <label for="target_int">Intent</label>
             <div class="input-group">
-                <input type="text" class="form-control" name="target_int" id="target_int">
+                <input type="text" class="form-control" name="target_int" id="target_int" value="atis_flight">
                 <div class="input-group-append">
                     <button type="button" class="btn btn-primary">Autofill</button>
                 </div>
@@ -57,19 +69,24 @@ Home - {{ super() }}
         </div>
     </div>
     <div class="row mb-3">
-        <div class="col-12">
-            <button type="button" class="btn btn-info">Back</button>
-            <button type="button" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-success">Save and Continue</button>
-            <button type="button" class="btn btn-info">Next</button>
+        <div class="col-12 level">
+            <button type="button" class="btn btn-light float-left">
+                <span class="icon">
+                    <i class="fas fa-chevron-left"></i>
+                </span>
+                <span>Prev</span>
+            </button>
+            <button type="button" class="btn btn-light float-right">
+                <span>Next</span>
+                <span class="icon">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+            </button>
         </div>
     </div>
     <div class="row mb-3">
         <div class="col-12">
-            <div class="progress">
-                <div class="progress-bar" style="width:100%"></div>
-            </div>
-            100000/100000
+
         </div>
     </div>
 </div>

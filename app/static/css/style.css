@@ -1,1 +1,13 @@
+.container-fluid{
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+}
+
 textarea { resize:none; }
+
+input[readonly]{
+    background-color:transparent !important;
+    border: 0;
+    border-bottom: solid 1px gray;
+    font-size: 1em;
+}

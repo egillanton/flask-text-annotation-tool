@@ -2,7 +2,25 @@
 flask-text-annotation-tool
 </h1>
 
-## Setup
+<img src="https://user-images.githubusercontent.com/9976294/69736852-347b8e80-112b-11ea-83ac-86896df31a09.png" alt="Screenshot" align="center"/>
+
+## Table of Contents
+<!-- ⛔️ MD-MAGIC-EXAMPLE:START (TOC:collapse=true&collapseText=Click to expand) -->
+<details>
+<summary>Click to expand</summary>
+
+1. [Introduction](#1-introduction)
+2. [Setup](#3-setup)
+3. [Authors](#4-authors)
+4. [License](#5-license)
+5. [References](#6-references)
+
+</details>
+<!-- ⛔️ MD-MAGIC-EXAMPLE:END -->
+
+## 1 Introduction
+
+## 2 Setup
 
 Make sure to have Python 3.6 or newer, and pip installed.
 
