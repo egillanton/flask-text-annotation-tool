@@ -1,36 +1,20 @@
 from app import create_app, db
 app = create_app()
 app.app_context().push()
-db.create_all()
 from app.models import Source, Target, Intent, Label
 
+# -------- Source Files -------------------------------- #
 test_fn = './data/source/atis.test.w-intent.iob'
 train_fn = './data/source/atis.train.w-intent.iob'
 
+# -------- Target Files -------------------------------- #
 intents_fout =  './data/target/atis.dict.intent.txt'
 slots_fout = './data/target/atis.dict.slots.txt'
 
 intents_set = set()
 slots_set = set()
 
-
-# -------- Intents -------------------------------- #
-def create_intents():
-    with open(intents_fn,'r') as fin:
-        for line in fin:
-            intent = Intent(intent=line.strip().lower())
-            db.session.add(intent)
-    db.session.commit()
-    
-# -------- Labels --------------------------------_set #
-def create_lables():
-    with open(slots_fn,'r') as fin:
-        for line in fin:
-            label = Label(label=line.strip().lower())
-            db.session.add(label)
-    db.session.commit()
-
-# -------- Source -------------------------------- #
+# -------- Create Source -------------------------------- #
 def create_source():
     with open(test_fn,'r') as fin:
         for line in fin:
@@ -91,6 +75,7 @@ def create_source():
     db.session.commit()
 
 def save_sets():
+    
     with open(intents_fout,'w') as fout:
         for intent in sorted(intents_set):
             fout.write(f'{intent}\n')
@@ -101,9 +86,8 @@ def save_sets():
 
 
 if __name__ == "__main__":
-    db.drop_all()
+    # Your first time? Run: '$ flask db migrate && flask db updgrade'
+    # db.drop_all() # Used to clear Database
     db.create_all()
-    # create_intents()
-    # create_lables()
     create_source()
     save_sets()
