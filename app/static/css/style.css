@@ -1,8 +1,3 @@
-.container-fluid{
-    padding-left: 50px !important;
-    padding-right: 50px !important;
-}
-
 textarea { resize:none; }
 
 input[readonly]{
@@ -11,3 +6,9 @@ input[readonly]{
     border-bottom: solid 1px gray;
     font-size: 1em;
 }
+
+
+p{
+    hyphens: manual;
+}
+ 

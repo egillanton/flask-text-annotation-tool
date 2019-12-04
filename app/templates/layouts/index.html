@@ -6,89 +6,102 @@ Home - {{ super() }}
 
 
 {% block content %}
-<div class="container-fluid mt-3">
-    <div class="row mb-3">
+<div class="content container mt-3">
+    <!-- ATIS DATA -->
+    <div class="card mb-3">
+        <div class="card-header">
+            ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="source_tokens">
+                a listing of all flights from boston to baltimore before 10 am on thursday
+            </p>
+            <h5 class="card-title">Lables</h5>
+            <p class="card-text border-bottom" id="source_lables">
+                O O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time
+                I-depart_time.time O B-depart_date.day_name
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="source_intent">
+                atis_flight
+            </p>
+        </div>
+    </div>
+
+    <!-- TRANSLATE BUTTON -->
+    <div class="row mb-3" id="translate_button_div">
+        <div class="col-12 level">
+            <button type="button" id="translate_button" class="btn btn-primary float-right">Translate</button>
+        </div>
+    </div>
+
+
+    <!-- TRANSLATE TEXT -->
+    <div class="row mb-3" id="translated_div" style="visibility:hidden;">
         <div class="col-12">
-            <h1 class="text-center">Text Annotation Tool</h1>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-2">
-            <progress max="100" class="progress-bar" value="17" style="width:100%"></progress>
-        </div>
-        <div class="col-10 pl-0">
-            <span class="ml10"><strong>1</strong></span>/<span>6</span>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-12 border-bottom">
-            <div class="form-group">
-                <label for="source_tokens">Tokens</label>
-                <input type="text" class="form-control" name="source_tokens" id="source_tokens" readonly
-                    value="a listing of all flights from boston to baltimore before 10 am on thursday">
-            </div>
-            <div class="form-group">
-                <label for="source_lables">Lables</label>
-                <input type="text" class="form-control" name="source_lables" id="source_lables" readonly
-                    value="O O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name">
-            </div>
-            <div class="form-group">
-                <label for="source_intent">Intent</label>
-                <input type="text" class="form-control" name="source_intent" id="source_intent" readonly
-                    value="atis_flight">
+            <div class="card  mb-3">
+                <div class="card-header">
+                    Google Translation
+                </div>
+                <div class="card-body">
+                    <p class="card-text" id="translated_text"></p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row mb-3">
+
+    <!-- TOKENS -->
+    <div class="row mb-3" id="tokens_div" style="visibility:hidden;">
         <div class="col-12">
             <label for="target_tokens">Tokens</label>
-            <div class="input-group">
+            <div class="input-group mb-3">
                 <input type="text" class="form-control" name="target_tokens" id="target_tokens">
-                <div class="input-group-append">
-                    <!-- <button type="button" class="btn btn-secondary">Copy Source</button> -->
-                    <button type="button" id="translate_button" class="btn btn-primary">Translate</button>
-                </div>
-            </div>
-
-            <label for="target_lables">Lables</label>
-            <div class="input-group">
-                <input type="text" class="form-control" name="target_lables" id="target_lables">
-                <div class="input-group-append">
-                    <button type="button" id="autofill_lables_button" class="btn btn-primary">Autofill</button>
-                </div>
-            </div>
-
-            <label for="target_intent">Intent</label>
-            <div class="input-group">
-                <input type="text" class="form-control" name="target_intent" id="target_intent">
-                <div class="input-group-append">
-                    <button type="button" id="autofill_intent_button" class="btn btn-primary">Autofill</button>
-                </div>
             </div>
         </div>
     </div>
-    <div class="row mb-3">
+
+    <!-- ANNOTATE BUTTON -->
+    <div class="row mb-3" id="annotate_button_div" style="visibility:hidden;">
         <div class="col-12 level">
-            <button type="button" class="btn btn-light float-left">
-                <span class="icon">
-                    <i class="fas fa-chevron-left"></i>
-                </span>
-                <span>Prev</span>
-            </button>
-            <button type="button" class="btn btn-light float-right">
-                <span>Next</span>
-                <span class="icon">
-                    <i class="fas fa-chevron-right"></i>
-                </span>
-            </button>
+            <button type="button" id="annotate_button" class="btn btn-primary float-right">Annotate</button>
         </div>
     </div>
-    <div class="row mb-3">
-        <div class="col-12">
 
+    <!-- CORRECT TEXT -->
+    <div class="row mb-3" id="correct_text_div" style="visibility:hidden;">
+        <div class="col-12">
+            <div class="card  mb-3">
+                <div class="card-header">
+                    Correct Text
+                </div>
+                <div class="card-body">
+                    <p class="card-text" id="correct_text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANNOTATION  -->
+    <div class="row mb-3" id="annotation_div" style="visibility:hidden;">
+        <div class="col-12">
+        </div>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="row mb-3" id="save_button_div" style="visibility:hidden;">
+        <div class="col-12 level">
+            <button type="button" class="btn btn-success float-right">
+                <span>Save</span>
+                <span class="icon">
+                    <i class="fas fa-save"></i>
+                </span>
+            </button>
         </div>
     </div>
 </div>
+
+
 {% endblock %}
 
 {% block scripts %}
