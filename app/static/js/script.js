@@ -1,6 +1,8 @@
 /////////// TRANSLATE ////////////////////////////////////////////////// 
 function translate() {
-    var source_tokens = $('#source_tokens').text();
+    let source_tokens = $('#source_tokens').text();
+
+
     if (source_tokens) {
         $.ajax({
             type: 'POST',
@@ -91,8 +93,38 @@ function clearSelection() {
     }
 }
 
+
+
+// TEST
+let source_tokens = "a listing of all flights from boston to baltimore before 10 am on thursday".split(" ");
+let source_lables = "O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name".split(" ");
+let source_intent = "atis_fligh";
+
+
+var source = source_tokens.map(function (e, i) {
+    return [e, source_lables[i]];
+});
+
+source.forEach(function (item, index, arr) {
+    document.getElementById("source_tokens").innerHTML += "<span class=\"" + index + "\">" + item[0] + " </span>";
+    document.getElementById("source_lables").innerHTML += "<span class=\"" + index + "\">" + item[1] + " </span>";
+});
+
+
+
 $('document').ready(function () {
     document.getElementById("translate_button").addEventListener("click", translate, false);
     document.getElementById("annotate_button").addEventListener("click", annotate, false);
     document.getElementById("target_tokens").addEventListener("select", save_token_selected, false);
+
+    $(function () {
+        $("p>span").hover(function () {
+            var id = $(this).attr('class');
+            $("." + id).toggleClass('text-primary');
+        }, function () {
+            var id = $(this).attr('class');
+            $("." + id.split(" ")[0]).toggleClass('text-primary');
+        });
+    });
+
 });
