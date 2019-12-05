@@ -9,9 +9,8 @@ from config import Config
 from . import repository as repo
 from . import google
 
-
 db = SQLAlchemy()
-from app.models import Source, Target
+from app.models import Source, Target, Label
 
 def create_app(test_config=None):
     """create and configure the app"""
@@ -20,8 +19,6 @@ def create_app(test_config=None):
     db = SQLAlchemy(app)
     migrate = Migrate(app, db)
     fa = FontAwesome(app)
-
-   
     # ======== Routing ============================= #
     # -------- Home -------------------------------- #
     @app.route('/', methods=['GET'])
@@ -61,10 +58,11 @@ def create_app(test_config=None):
             translation=translation.lower(),
         )
 
-     # -------- Get Labels -------------------------------- #
-    @app.route('/get_labels', methods=['POST'])
-    def get_labels():
-        lables = []
+    # -------- Get Slot Tags (Labels) ---------------------#
+    @app.route('/tags', methods=['GET'])
+    def tags():
+        lables = db.session.query(Label.label).all()
+     
         return jsonify(
             lables=lables,
         )

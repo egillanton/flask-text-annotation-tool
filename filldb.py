@@ -87,7 +87,7 @@ def save_sets():
 
 if __name__ == "__main__":
     # Your first time? Run: '$ flask db migrate && flask db updgrade'
-    # db.drop_all() # Used to clear Database
+    db.drop_all() # Used to clear Database
     db.create_all()
     create_source()
     save_sets()

@@ -6,7 +6,7 @@ Home - {{ super() }}
 
 
 {% block content %}
-<div class="content container mt-3">
+<div class="container mt-3" id="main_content_div" style="visibility:hidden;">
     <!-- ATIS DATA -->
     <div class="card mb-3">
         <div class="card-header">
@@ -21,7 +21,6 @@ Home - {{ super() }}
             </p>
             <h5 class="card-title">Intent</h5>
             <p class="card-text border-bottom" id="source_intent">
-                atis_flight
             </p>
         </div>
     </div>
@@ -51,7 +50,7 @@ Home - {{ super() }}
     <!-- TOKENS -->
     <div class="row mb-3" id="tokens_div" style="visibility:hidden;">
         <div class="col-12">
-            <label for="target_tokens">Tokens</label>
+            <label for="target_tokens">Please correct if needed:</label>
             <div class="input-group mb-3">
                 <input type="text" class="form-control" name="target_tokens" id="target_tokens">
             </div>
@@ -70,7 +69,7 @@ Home - {{ super() }}
         <div class="col-12">
             <div class="card  mb-3">
                 <div class="card-header">
-                    Correct Text
+                    Tokens
                 </div>
                 <div class="card-body">
                     <p class="card-text" id="correct_text"></p>
@@ -81,9 +80,60 @@ Home - {{ super() }}
 
     <!-- ANNOTATION  -->
     <div class="row mb-3" id="annotation_div" style="visibility:hidden;">
-        <div class="col-12">
+        <div class="col-6">
+            <table class="table border">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tokens</th>
+                        <th scope="col">Slot Tag</th>
+                    </tr>
+                </thead>
+                <tbody id="annotation_tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6">
+            <table class="table border">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Source Tokens</th>
+                        <th scope="col">Slot Tags</th>
+                        <th scope="col">Slot Tag #</th>
+                    </tr>
+                </thead>
+                <tbody id="tags_found_tbody">
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <!-- PREVIEW BUTTON -->
+    <div class="row mb-3" id="preview_button_div" style="visibility:hidden;">
+        <div class="col-12 level">
+            <button type="button" id="preview_button" class="btn btn-primary float-right">Preview</button>
+        </div>
+    </div>
+
+    <!-- PREVIEW DATA -->
+    <div class="card mb-3" id="preview_div" style="visibility:hidden;">
+        <div class="card-header">
+            ICE-ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="preview_tokens">
+            </p>
+            <h5 class="card-title">Lables</h5>
+            <p class="card-text border-bottom" id="preview_lables">
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="preview_intent">
+            </p>
+        </div>
+    </div>
+
 
     <!-- SAVE BUTTON -->
     <div class="row mb-3" id="save_button_div" style="visibility:hidden;">
@@ -97,6 +147,8 @@ Home - {{ super() }}
         </div>
     </div>
 </div>
+
+
 
 
 {% endblock %}
