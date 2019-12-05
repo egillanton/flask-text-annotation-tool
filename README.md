@@ -2,7 +2,7 @@
 flask-text-annotation-tool
 </h1>
 
-<img src="https://user-images.githubusercontent.com/9976294/69736852-347b8e80-112b-11ea-83ac-86896df31a09.png" alt="Screenshot" align="center"/>
+<img src="https://user-images.githubusercontent.com/9976294/70197790-d93a3500-1704-11ea-945d-5102ffe1512e.png" alt="Screenshot" align="center"/>
 
 ## Table of Contents
 <!-- ⛔️ MD-MAGIC-EXAMPLE:START (TOC:collapse=true&collapseText=Click to expand) -->
