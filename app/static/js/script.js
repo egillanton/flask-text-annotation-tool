@@ -1,14 +1,37 @@
 var slot_tags = [];
+var source_map = undefined;
+var source_id = undefined;
+var source_intent = undefined;
+var source_tokens = undefined;
+var source_labels = undefined;
+var sample_is_completed = false;
 
+/////////// GET ATIS Sample /////////////////////////////////////////////// 
+function get_atis_sample(callback) {
+    $.ajax({
+        type: 'GET',
+        url: '/sample',
+        success: function (response) {
+            source_id = response.sample_id;
+            source_tokens = response.sample_tokens.split(" ");
+            source_labels = response.sample_labels.split(" ");
+            source_intent = response.sample_intent;
+            callback();
+        },
+        error: function (request, error) {
+            // alert("Request: " + JSON.stringify(request));
+        }
+    });
+}
 
-/////////// GET SLOT TAGS ////////////////////////////////////////////////// 
-function get_slot_tags(callback) {
+/////////// GET SLOT TAGS ///////////////////////////////////////////////// 
+function get_all_slot_tags(callback) {
     if (slot_tags === undefined || slot_tags.length == 0) {
         $.ajax({
             type: 'GET',
             url: '/tags',
             success: function (response) {
-                let data = response.lables;
+                let data = response.labels;
                 $.each(data, function (index, tag) {
                     slot_tags.push(tag[0])
                 });
@@ -22,10 +45,15 @@ function get_slot_tags(callback) {
     callback();
 }
 
-/////////// TRANSLATE ////////////////////////////////////////////////// 
+/////////// TRANSLATE ////////////////////////////////////////////////////
 function translate() {
-    let source_tokens = $('#source_tokens').text();
+    var source_tokens_str = $('#source_tokens').text();
+    source_tokens_str = source_tokens_str.trim();
 
+    var source_tokens = source_tokens_str.split(' '); 
+    source_tokens.shift(); // Remove BOS
+    source_tokens.pop(); // Remove EOS
+    source_tokens = source_tokens.join(' ');
 
     if (source_tokens) {
         $.ajax({
@@ -54,7 +82,7 @@ function translate() {
     }
 }
 
-/////////// ANNOTATE ////////////////////////////////////////////////////////////// 
+/////////// ANNOTATE ////////////////////////////////////////////////////// 
 function annotate() {
     let correct_tokens = $('#target_tokens').val().toLowerCase().replace(/\s+/g, ' ').trim();;
     create_annotate_table(() => {
@@ -66,28 +94,18 @@ function annotate() {
             $('#correct_text_div').css('visibility', 'visible');
             $('#annotation_div').css('visibility', 'visible');
             $('#preview_button_div').css('visibility', 'visible');
-            $(document).on('keypress', 'select', function (e) {
-                let enter_key = 13;
-                let tab_key = 9;
-                if (e.which == enter_key || e.which == tab_key) {
-                    e.preventDefault();
-                    // Get all focusable elements on the page
-                    var $canfocus = $(':focusable');
-                    var index = $canfocus.index(document.activeElement) + 1;
-                    if (index >= $canfocus.length) index = 0;
-                    $canfocus.eq(index).focus();
-                }
-            });
-            window.location.hash = '#annotation_div';
-            window.location.hash = '';
+            scrool_to('#annotation_div');
+           
         });
     });
 }
 
-/////////// CREATE ANNOTATE TABLE ////////////////////////////////////////////////////////////// 
+/////////// CREATE ANNOTATE TABLE /////////////////////////////////////////
 function create_annotate_table(callback) {
     var correct_tokens = $('#target_tokens').val().toLowerCase().replace(/\s+/g, ' ').trim();
     var arr = correct_tokens.split(" ");
+    arr.unshift("BOS");
+    arr.push("EOS");
 
     arr.forEach(function (item, index, arr) {
         var annotation_tbody_html = "";
@@ -123,13 +141,11 @@ function create_annotate_table(callback) {
     callback();
 }
 
-
-var source = undefined;
-
+/////////// CREATE SOURCE TAG TABLE ///////////////////////////////////////
 function create_source_tag_table(callback) {
 
     // Populate Source Data
-    source.forEach(function (item, index, arr) {
+    source_map.forEach(function (item, index, arr) {
         if (item[1] !== "O") {
 
             var table_row = `
@@ -156,44 +172,46 @@ function create_source_tag_table(callback) {
     callback();
 }
 
-
-/////////// Preview //////////////////////////////////////////////////////////////
+/////////// PREVIEW ///////////////////////////////////////////////////////
 function preview() {
 
     var annotation_tbody = document.querySelector("#annotation_tbody");
     var data = annotation_tbody.querySelectorAll('select');
-    var preview_lables = [];
+    var preview_labels = [];
 
     for (var i = 0; i < data.length; i++) {
         var select_picker = data[i];
-        preview_lables.push(select_picker.value);
+        preview_labels.push(select_picker.value);
     }
 
-    var correct_tokens = $('#target_tokens').val().toLowerCase();
+    var correct_tokens = "".concat("BOS ", $('#target_tokens').val()," EOS" );
     var preview_tokens = correct_tokens.split(" ");
 
     preview = preview_tokens.map(function (e, i) {
-        return [e, preview_lables[i]];
+        return [e, preview_labels[i]];
     });
 
     // Clear data if there is any
     document.getElementById("preview_tokens").innerHTML = "";
-    document.getElementById("preview_lables").innerHTML = "";
+    document.getElementById("preview_labels").innerHTML = "";
 
     // Populate with data
     preview.forEach(function (item, index, arr) {
         document.getElementById("preview_tokens").innerHTML += `<span class="${index + source_length}">${item[0]} </span>`;
-        document.getElementById("preview_lables").innerHTML += `<span class="${index + source_length}">${item[1]} </span>`;
+        document.getElementById("preview_labels").innerHTML += `<span class="${index + source_length}">${item[1]} </span>`;
     });
 
-    document.getElementById("preview_intent").innerHTML = source_intent;
     refreash_hover_effect();
 
     $('#preview_div').css('visibility', 'visible');
+    $('#save_button_div').css('visibility', 'visible');
 }
 
 /////////// Hover //////////////////////////////////////////////////////////////
 function refreash_hover_effect() {
+    // TODO: Fix Hover effect from ATIS DATA after Preview Card has been displayed.
+    // Bug: ATIS Data Tokens wont toggle back to being normal after leaving hover 
+
     $(function () {
         $("p>span").hover(function () {
             var id = $(this).attr('class');
@@ -205,39 +223,90 @@ function refreash_hover_effect() {
     });
 }
 
-// TEST
-var source_tokens = "a listing of all flights from boston to baltimore before 10 am on thursday".split(" ");
-var source_lables = "O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name".split(" ");
-var source_intent = "atis_flight";
-var source_length = 0;
+function save(){
+    if ($('#is_completed_checkbox').is(":checked")){
+        sample_is_completed = true;
+    }
+    var preview_tokens = $("#preview_tokens").text().trim();
+    var preview_labels = $("#preview_labels").text().trim();
+    var preview_intent = $("#preview_intent").text().trim();
+    $.ajax({
+        type: 'POST',
+        url: '/sample',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            "sample_id": source_id,
+            "sample_tokens": preview_tokens,
+            "sample_labels": preview_labels,
+            "sample_intent": source_intent,
+            "sample_is_completed": sample_is_completed,
+        }),
+        success: function (response) {
+            if(response.success){
+                Swal.fire(
+                    'Good Job!',
+                    'Your sample has been recived!',
+                    'success'
+                ).then((result) =>{
+                    document.location.reload(true);
+                });
+            }
+        },
+        error: function (request, error) {
+            // alert("Request: " + JSON.stringify(request));
+            Swal.fire(
+                'Error!',
+                'Your sample has not been recived!',
+                'warning'
+            );
+        }
+    });
+
+
+}
+
+/////////// Scroll to Tag //////////////////////////////////////////////////////////////
+function scrool_to(tag){
+    var position = $(tag).offset().top;
+
+    $("body, html").animate({
+        scrollTop: position
+    });
+}
 
 /////////// MAIN //////////////////////////////////////////////////////////////
 $('document').ready(function () {
-    // Get Single Instance of Source Data
-    source = source_tokens.map(function (e, i) {
-        return [e, source_lables[i]];
-    });
 
-    source_length = source.length;
+    get_atis_sample(() => {
+        // Get Single Instance of Source Data
+        source_map = source_tokens.map(function (e, i) {
+            return [e, source_labels[i]];
+        });
 
-    // Populate Source Data
-    source.forEach(function (item, index, arr) {
-        document.getElementById("source_tokens").innerHTML += `<span class="${index}">${item[0]} </span>`;
-        document.getElementById("source_lables").innerHTML += `<span class="${index}">${item[1]} </span>`;
-    });
+        source_length = source_map.length;
 
-    refreash_hover_effect();
+        // Populate Source Data
+        source_map.forEach(function (item, index, arr) {
+            document.getElementById("source_tokens").innerHTML += `<span class="${index}">${item[0]} </span>`;
+            document.getElementById("source_labels").innerHTML += `<span class="${index}">${item[1]} </span>`;
+        });
 
-    document.getElementById("source_intent").innerHTML = source_intent;
+        refreash_hover_effect();
 
-    // Map Buttons
-    document.getElementById("translate_button").addEventListener("click", translate, false);
-    document.getElementById("annotate_button").addEventListener("click", annotate, false);
-    document.getElementById("preview_button").addEventListener("click", preview, false);
+        document.getElementById("source_intent").innerHTML = source_intent;
+        document.getElementById("preview_intent").innerHTML = source_intent;
 
-    // Get Available Slot Tags
-    get_slot_tags(() => {
-        // Already, Now display Source Data
-        $('#main_content_div').css('visibility', 'visible');
+        // Map Buttons
+        document.getElementById("translate_button").addEventListener("click", translate, false);
+        document.getElementById("annotate_button").addEventListener("click", annotate, false);
+        document.getElementById("preview_button").addEventListener("click", preview, false);
+        document.getElementById("save_button").addEventListener("click", save, false);
+
+        // Get Available Slot Tags
+        get_all_slot_tags(() => {
+            $('#main_content_div').css('visibility', 'visible');
+            scrool_to('#main_content_div');
+        });
     });
 });

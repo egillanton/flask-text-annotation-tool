@@ -38,7 +38,7 @@ def create_source():
             else:
                 intent = Intent.query.filter_by(intent=intent_name).first()
             target = Target(intent=intent, intent_id=intent.id)
-            source = Source(tokens= tokens.strip().lower(), lables=slots, intent=intent, intent_id=intent.id, target=target, target_id=target.id)
+            source = Source(tokens= tokens.strip(), labels=slots, intent=intent, intent_id=intent.id, target=target, target_id=target.id)
             target.source = source
             target.source_id = source.id
             db.session.add(source)
@@ -66,7 +66,7 @@ def create_source():
             else:
                 intent = Intent.query.filter_by(intent=intent_name).first()
             target = Target(intent=intent, intent_id=intent.id)
-            source = Source(tokens= tokens.strip().lower(), lables=slots, intent=intent, intent_id=intent.id, target=target, target_id=target.id, training_set=True)
+            source = Source(tokens= tokens.strip(), labels=slots, intent=intent, intent_id=intent.id, target=target, target_id=target.id, training_set=True)
             target.source = source
             target.source_id = source.id
             target.training_set = True

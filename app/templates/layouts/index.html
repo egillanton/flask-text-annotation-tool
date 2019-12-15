@@ -7,6 +7,8 @@ Home - {{ super() }}
 
 {% block content %}
 <div class="container mt-3" id="main_content_div" style="visibility:hidden;">
+    <!-- HEADER -->
+    <h1 class="text-center">Text Annotation Tool</h1>
     <!-- ATIS DATA -->
     <div class="card mb-3">
         <div class="card-header">
@@ -16,8 +18,8 @@ Home - {{ super() }}
             <h5 class="card-title">Tokens</h5>
             <p class="card-text border-bottom" id="source_tokens">
             </p>
-            <h5 class="card-title">Lables</h5>
-            <p class="card-text border-bottom" id="source_lables">
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="source_labels">
             </p>
             <h5 class="card-title">Intent</h5>
             <p class="card-text border-bottom" id="source_intent">
@@ -125,8 +127,8 @@ Home - {{ super() }}
             <h5 class="card-title">Tokens</h5>
             <p class="card-text border-bottom" id="preview_tokens">
             </p>
-            <h5 class="card-title">Lables</h5>
-            <p class="card-text border-bottom" id="preview_lables">
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="preview_labels">
             </p>
             <h5 class="card-title">Intent</h5>
             <p class="card-text border-bottom" id="preview_intent">
@@ -138,12 +140,18 @@ Home - {{ super() }}
     <!-- SAVE BUTTON -->
     <div class="row mb-3" id="save_button_div" style="visibility:hidden;">
         <div class="col-12 level">
-            <button type="button" class="btn btn-success float-right">
-                <span>Save</span>
+            <button type="button" id="save_button" class="btn btn-success float-right">
+                <span>Confirm and Save</span>
                 <span class="icon">
                     <i class="fas fa-save"></i>
                 </span>
             </button>
+            <div class="form-check mr-sm-2 float-right">
+                <input class="form-check-input" type="checkbox" id="is_completed_checkbox">
+                <label class="form-check-label" for="is_completed_checkbox">
+                    Is Completed
+                </label>
+            </div>
         </div>
     </div>
 </div>

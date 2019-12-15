@@ -1,3 +1,4 @@
+
 import os
 
 from flask import Flask, render_template, request, jsonify
@@ -29,25 +30,41 @@ def create_app(test_config=None):
     @app.route('/sample', methods=['GET', 'POST'])
     def sample():
         if request.method == 'POST':
+            print(request)
             sample_id = request.json['sample_id']
-            target_tokens = request.json['target_tokens']
-            target_labels = request.json['target_labels']
-            target_intent = request.json['target_intent']
-            repo.store_sample(target_tokens, target_labels, target_intent)
-        else:
-            try:
-                # With Id
-                sample_id = request.json['sample_id']
-                response = ''
-            except:
-                # Without Id
-                response = ''
-            finally:
-                return jsonify(
-                    response=response,
-                )
+            sample_tokens = request.json['sample_tokens']
+            sample_labels = request.json['sample_labels']
+            sample_intent = request.json['sample_intent']
+            sample_is_completed = request.json['sample_is_completed']
 
-        return render_template('expression')
+            if not (sample_labels and sample_tokens and  (len(sample_labels.split(" ")) == len(sample_tokens.split(" "))) and sample_id and sample_intent):
+                return jsonify(
+                    success="False",
+                    message="Field a field is incorrect"
+                )
+            else:
+                source_sample = Source.query.get(sample_id)
+                target_sample = Target.query.get(source_sample.target_id)
+                target_sample.tokens = sample_tokens
+                target_sample.labels = sample_labels
+                target_sample.is_completed =  sample_is_completed
+                db.session.commit()
+
+                return jsonify(success="True")
+        
+            
+        else:
+            # Without Id
+            uncompleted_target = Target.query.filter(Target.is_completed == False).first()
+            sample = Source.query.get(uncompleted_target.source.id)
+            # sample = db.session.query.join(Source, uncompleted_target.source).single()
+
+            return jsonify(
+                sample_tokens=sample.tokens,
+                sample_labels=sample.labels,
+                sample_intent=sample.intent.intent,
+                sample_id=sample.id,
+            )
 
     # -------- Translate -------------------------------- #
     @app.route('/translate', methods=['POST'])
@@ -61,10 +78,10 @@ def create_app(test_config=None):
     # -------- Get Slot Tags (Labels) ---------------------#
     @app.route('/tags', methods=['GET'])
     def tags():
-        lables = db.session.query(Label.label).all()
-     
+        labels = db.session.query(Label.label).all()
+
         return jsonify(
-            lables=lables,
+            labels=labels,
         )
 
     return app
