@@ -50,7 +50,7 @@ function translate() {
     var source_tokens_str = $('#source_tokens').text();
     source_tokens_str = source_tokens_str.trim();
 
-    var source_tokens = source_tokens_str.split(' '); 
+    var source_tokens = source_tokens_str.split(' ');
     source_tokens.shift(); // Remove BOS
     source_tokens.pop(); // Remove EOS
     source_tokens = source_tokens.join(' ');
@@ -95,7 +95,7 @@ function annotate() {
             $('#annotation_div').css('visibility', 'visible');
             $('#preview_button_div').css('visibility', 'visible');
             scrool_to('#annotation_div');
-           
+
         });
     });
 }
@@ -117,19 +117,42 @@ function create_annotate_table(callback) {
             <td>
                 <select class="selectpicker" data-size="6" data-live-search="true" tabindex="${index}" id="select_${index}">`;
 
-        var table_rows = `
-                <option data-tokens="0">O</option>`;
+        var table_rows = source_map.reduce((result, label_pair) => {
+            if (item === label_pair[0]) { 
+                result = `
+            <option data-tokens="${slot_tags.indexOf(label_pair[1]) + 1}">${label_pair[1]}</option>
+            <option data-tokens="0">O</option>`;
 
 
-        slot_tags.forEach(function (tag, ind, arrr) {
-            var option = ""
-            if (tag === "O") {
-                // Continue
-            } else {
-                table_rows = table_rows.concat(`
-                <option data-tokens="${ind + 1}">${tag}</option>`);
-            }
-        });
+            slot_tags.forEach(function (tag, ind, arrr) {
+                var option = ""
+                if (tag === "O" || tag === label_pair[1]) {
+                    // Continue
+                } else {
+                    result = result.concat(`
+            <option data-tokens="${ind + 1}">${tag}</option>`);
+                }
+            });
+             }
+            return result
+          }, null)
+
+
+        if(table_rows === null) {
+            table_rows = `
+            <option data-tokens="0">O</option>`;
+
+            slot_tags.forEach(function (tag, ind, arrr) {
+                var option = ""
+                if (tag === "O") {
+                    // Continue
+                } else {
+                    table_rows = table_rows.concat(`
+            <option data-tokens="${ind + 1}">${tag}</option>`);
+                }
+            });
+        }
+
         let close_tags = `
                 </select>
             </td>
@@ -184,7 +207,7 @@ function preview() {
         preview_labels.push(select_picker.value);
     }
 
-    var correct_tokens = "".concat("BOS ", $('#target_tokens').val()," EOS" );
+    var correct_tokens = "".concat("BOS ", $('#target_tokens').val(), " EOS");
     var preview_tokens = correct_tokens.split(" ");
 
     preview = preview_tokens.map(function (e, i) {
@@ -223,8 +246,8 @@ function refreash_hover_effect() {
     });
 }
 
-function save(){
-    if ($('#is_completed_checkbox').is(":checked")){
+function save() {
+    if ($('#is_completed_checkbox').is(":checked")) {
         sample_is_completed = true;
     }
     var preview_tokens = $("#preview_tokens").text().trim();
@@ -243,12 +266,12 @@ function save(){
             "sample_is_completed": sample_is_completed,
         }),
         success: function (response) {
-            if(response.success){
+            if (response.success) {
                 Swal.fire(
                     'Good Job!',
                     'Your sample has been recived!',
                     'success'
-                ).then((result) =>{
+                ).then((result) => {
                     document.location.reload(true);
                 });
             }
@@ -267,7 +290,7 @@ function save(){
 }
 
 /////////// Scroll to Tag //////////////////////////////////////////////////////////////
-function scrool_to(tag){
+function scrool_to(tag) {
     var position = $(tag).offset().top;
 
     $("body, html").animate({
