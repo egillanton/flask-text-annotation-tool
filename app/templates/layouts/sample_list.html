@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="m-3">
+    <section>
+        <table id="dtBasicExample" class="table  border-collapse table-striped table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="th-sm">#
+                    </th>
+                    <th class="th-sm">Source Text
+                    </th>
+                    <th class="th-sm">Target Text
+                    </th>
+                    <th class="th-sm">Intent
+                    </th>
+                    <th class="th-sm">Is Completed
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- <tr>
+                    <td>Tiger Nixon</td>
+                    <td>System Architect</td>
+                    <td>Edinburgh</td>
+                    <td>atis-flight</td>
+                    <td>True</td>
+                </tr> -->
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/sample_list.js') }}"></script>
+{% endblock %}
