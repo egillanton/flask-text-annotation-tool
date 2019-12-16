@@ -17,6 +17,13 @@ class Source(db.Model):
     def __repr__(self):
         return f'Tokens: {self.Tokens}'
 
+    def serialize(self):
+        return {
+            "tokens": self.tokens, 
+            "labels": self.labels,
+            "intent": self.intent.intent,
+        }
+
 
 class Target(db.Model):
     __tablename__ = 'targets'
@@ -26,11 +33,20 @@ class Target(db.Model):
     intent_id = db.Column(db.Integer, db.ForeignKey('intents.id'))
     intent = db.relationship("Intent")
     source = db.relationship("Source", back_populates="target", uselist=False)
-    training_set = db.Column(db.Boolean, default=False, nullable=False)
+    is_training_set = db.Column(db.Boolean, default=False, nullable=False)
     is_completed = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return f'Tokens: {self.Tokens}'
+
+    def serialize(self):
+        return {
+            'tokens': self.tokens, 
+            'labels': self.labels,
+            'intent': self.intent.intent,
+            'is_training_set': self.is_training_set,
+            'is_completed': self.is_completed,
+        }
 
 
 class Intent(db.Model):

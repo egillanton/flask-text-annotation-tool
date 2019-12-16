@@ -69,7 +69,7 @@ def create_source():
             source = Source(tokens= tokens.strip(), labels=slots, intent=intent, intent_id=intent.id, target=target, target_id=target.id, training_set=True)
             target.source = source
             target.source_id = source.id
-            target.training_set = True
+            target.is_training_set = True
             db.session.add(source)
             db.session.add(target)
     db.session.commit()

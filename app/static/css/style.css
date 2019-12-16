@@ -30,10 +30,6 @@ select.btn-mini + .caret {
     margin-top: 9px;
 }
 
-body {
-    padding: 20px;
-}
-
 .selectpicker{
     font-size: 15px !important;
 }

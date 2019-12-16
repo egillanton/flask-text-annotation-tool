@@ -1,7 +1,7 @@
 
 import os
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_fontawesome import FontAwesome
@@ -65,6 +65,11 @@ def create_app(test_config=None):
                 sample_intent=sample.intent.intent,
                 sample_id=sample.id,
             )
+    # -------- Samples -------------------------------- #
+    @app.route('/samples', methods=['GET'])
+    def samples():
+        return render_template('layouts/sample_list.html')
+
 
     # -------- Translate -------------------------------- #
     @app.route('/translate', methods=['POST'])
@@ -82,6 +87,47 @@ def create_app(test_config=None):
 
         return jsonify(
             labels=labels,
+        )
+
+    # ======== REST API ============================= #
+    @app.route('/api/samples', methods=['GET'])
+    def get_samples():
+        source_samples = Source.query.all()
+        if not source_samples:
+            abort(404)
+        
+        target_samples = Target.query.all()
+        if not target_samples:
+            abort(404)
+
+        return jsonify(
+            samples=[
+                {
+                    "id": source_sample.id, 
+                    "source": source_sample.serialize(), 
+                    "target": target_sample.serialize()
+                } 
+            for source_sample,target_sample in zip(source_samples, target_samples)]
+        )
+        
+ 
+    
+    @app.route('/api/samples/<int:sample_id>', methods=['GET'])
+    def get_sample(sample_id):
+        source_sample = Source.query.get(sample_id)
+        if not source_sample:
+            abort(404)
+        
+        target_sample = Target.query.get(sample_id)
+        if not target_sample:
+            abort(404)
+        
+        return jsonify(
+            {
+                "id": sample_id, 
+                "source": source_sample.serialize(), 
+                "target": target_sample.serialize(),
+            } 
         )
 
     return app
