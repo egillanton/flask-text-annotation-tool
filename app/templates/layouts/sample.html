@@ -1,1 +1,76 @@
 {% extends "base.html" %}
+
+{% block title %}{{ data.id }} {% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <!-- ATIS DATA -->
+    <div class="card mb-3">
+        <div class="card-header">
+            ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="source_tokens">
+                {% if data.source.tokens %}
+                {% for item in data.source.tokens.split(" ") %}
+                <span class="{{loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="source_labels">
+                {% if data.source.labels %}
+                {% for item in data.source.labels.split(" ") %}
+                <span class="{{loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="source_intent">
+                {{data.source.intent}}
+            </p>
+        </div>
+    </div>
+
+    <!-- TARGET DATA -->
+    <div class="card mb-3">
+        <div class="card-header">
+            ICE-ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="target_tokens">
+                {% if data.target and data.target.tokens %}
+                {% for item in data.target.tokens.split() %}
+                <span class="{{data.source.tokens|length + loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="target_labels">
+                {% if data.target and data.target.labels %}
+                {% for item in data.target.labels.split() %}
+                <span class="{{data.source.tokens|length + loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="target_intent">
+                {% if data.target %}
+                {{data.target.intent}}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/hover.js') }}"></script>
+<script>
+    $('document').ready(function () {
+        apply_hover_effect();
+    });
+</script>
+{% endblock %}

@@ -29,7 +29,7 @@ function get_all_slot_tags(callback) {
     if (slot_tags === undefined || slot_tags.length == 0) {
         $.ajax({
             type: 'GET',
-            url: '/tags',
+            url: '/api/tags',
             success: function (response) {
                 let data = response.labels;
                 $.each(data, function (index, tag) {
@@ -58,7 +58,7 @@ function translate() {
     if (source_tokens) {
         $.ajax({
             type: 'POST',
-            url: '/translate',
+            url: '/api/translate',
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify({

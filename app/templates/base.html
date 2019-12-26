@@ -24,14 +24,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sample_list.css') }}">
     <link rel='shortcut icon' type='image/x-icon' href="{{ url_for('static', filename='favicon.ico') }}" />
-    <title>{% block title %}{% endblock %}Text Annotation Tool</title>
+    <title>{% block title %}Text Annotation Tool{% endblock %}</title>
 
 </head>
 
 <body>
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="#">Text Annotation Tool</a>
+        <a class="navbar-brand" href="/">Text Annotation Tool</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
             aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -50,8 +50,13 @@
                         Annotate
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <div class="dropdown-item form-inline px-2">
+                            <i class="fas fa-search mr-1" aria-hidden="true"></i>
+                            <input id="annotate_search_input" class=" form-control" type="text" placeholder="Search"
+                                aria-label="Search">
+                        </div>
                         <a class="dropdown-item" href="/sample">New Sample</a>
-                        <a class="dropdown-item" href="/sample?is_completed=false">Incompleted Sample</a>
+                        <a class="dropdown-item" href="/sample?is_completed=false">Uncompleted Sample</a>
                     </div>
                 </li>
             </ul>
@@ -70,10 +75,8 @@
     <!-- Bootstrap core JavaScript -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-        src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript"
-        src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
     <!-- MDB core JavaScript -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.10.1/js/mdb.min.js"></script>
@@ -81,8 +84,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
     <!-- sweetalert2 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/8.11.8/sweetalert2.all.min.js"></script>
+    <!-- Navigation -->
+    <script>
+        $('#annotate_search_input').keypress(function (e) {
+            var key = e.which;
+            if (key == 13)  // the enter key code
+            {
+                id = $('#annotate_search_input').val();
+                if (!isNaN(id)) {
+                    window.location.href = `/annotate/${id}`
+                }
+            }
+        });
+    </script>
     <!-- CUSTOM SCRIPS -->
     {% block scripts %}
+
     {% endblock %}
 </body>
 
