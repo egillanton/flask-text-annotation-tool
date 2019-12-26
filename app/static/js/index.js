@@ -1,20 +1,5 @@
-/////////// GET STATISTICS /////////////////////////////////////////////// 
-function get_stats(callback) {
-    $.ajax({
-        type: 'GET',
-        url: '/api/stats',
-        success: function (response) {
-            callback();
-        },
-        error: function (request, error) {
-            // alert("Request: " + JSON.stringify(request));
-        }
-    });
-}
-
-
 $(document).ready(function () {
-    get_stats(()=>{
-       
+    $("#get_started_btn").click(function() {
+        window.location.href = `/annotate/new`    
     });
 });
