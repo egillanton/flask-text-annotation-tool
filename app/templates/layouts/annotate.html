@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-3" id="main_content_div" style="visibility:hidden;">
+    <!-- HEADER -->
+    <h1 class="text-center">Text Annotation Tool</h1>
+    <!-- ATIS DATA -->
+    <div class="card mb-3">
+        <div class="card-header">
+            ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="source_tokens">
+            </p>
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="source_labels">
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="source_intent">
+            </p>
+        </div>
+    </div>
+
+    <!-- TRANSLATE BUTTON -->
+    <div class="row mb-3" id="translate_button_div">
+        <div class="col-12 level">
+            <button type="button" id="translate_button" class="btn btn-primary float-right">Translate</button>
+        </div>
+    </div>
+
+
+    <!-- TRANSLATE TEXT -->
+    <div class="row mb-3" id="translated_div" style="visibility:hidden;">
+        <div class="col-12">
+            <div class="card  mb-3">
+                <div class="card-header">
+                    Google Translation
+                </div>
+                <div class="card-body">
+                    <p class="card-text" id="translated_text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOKENS -->
+    <div class="row mb-3" id="tokens_div" style="visibility:hidden;">
+        <div class="col-12">
+            <label for="target_tokens">Please correct if needed:</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="target_tokens" id="target_tokens">
+            </div>
+        </div>
+    </div>
+
+    <!-- ANNOTATE BUTTON -->
+    <div class="row mb-3" id="annotate_button_div" style="visibility:hidden;">
+        <div class="col-12 level">
+            <button type="button" id="annotate_button" class="btn btn-primary float-right">Annotate</button>
+        </div>
+    </div>
+
+    <!-- CORRECT TEXT -->
+    <div class="row mb-3" id="correct_text_div" style="visibility:hidden;">
+        <div class="col-12">
+            <div class="card  mb-3">
+                <div class="card-header">
+                    Tokens
+                </div>
+                <div class="card-body">
+                    <p class="card-text" id="correct_text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANNOTATION  -->
+    <div class="row mb-3" id="annotation_div" style="visibility:hidden;">
+        <div class="col-6">
+            <table class="table border">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tokens</th>
+                        <th scope="col">Slot Tag</th>
+                    </tr>
+                </thead>
+                <tbody id="annotation_tbody">
+                </tbody>
+            </table>
+        </div>
+        <div class="col-6">
+            <table class="table border">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Source Tokens</th>
+                        <th scope="col">Slot Tags</th>
+                        <th scope="col">Slot Tag #</th>
+                    </tr>
+                </thead>
+                <tbody id="tags_found_tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PREVIEW BUTTON -->
+    <div class="row mb-3" id="preview_button_div" style="visibility:hidden;">
+        <div class="col-12 level">
+            <button type="button" id="preview_button" class="btn btn-primary float-right">Preview</button>
+        </div>
+    </div>
+
+    <!-- PREVIEW DATA -->
+    <div class="card mb-3" id="preview_div" style="visibility:hidden;">
+        <div class="card-header">
+            ICE-ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="preview_tokens">
+            </p>
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="preview_labels">
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="preview_intent">
+            </p>
+        </div>
+    </div>
+
+
+    <!-- SAVE BUTTON -->
+    <div class="row mb-3" id="save_button_div" style="visibility:hidden;">
+        <div class="col-12 level">
+            <button type="button" id="save_button" class="btn btn-success float-right">
+                <span>Confirm and Save</span>
+                <span class="icon">
+                    <i class="fas fa-save"></i>
+                </span>
+            </button>
+            <div class="form-check mr-sm-2 float-right">
+                <input class="form-check-input" type="checkbox" id="is_completed_checkbox">
+                <label class="form-check-label" for="is_completed_checkbox">
+                    Is Completed
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

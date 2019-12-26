@@ -2,6 +2,7 @@ venv/
 .vscode/
 
 app.db
+app.db-journal
 data/target/
 migrations/
 
