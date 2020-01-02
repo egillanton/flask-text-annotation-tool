@@ -1,7 +1,12 @@
-from app import create_app, db
+from app import create_app
+from app.database import db
 app = create_app()
 app.app_context().push()
-from app.models import Source, Target, Intent, Label
+from app.models.source import Source
+from app.models.target import Target
+from app.models.intent import Intent
+from app.models.label import Label
+
 
 # -------- Source Files -------------------------------- #
 test_fn = './data/source/atis.test.w-intent.iob'

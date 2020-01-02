@@ -1,6 +1,6 @@
 var slot_tags = [];
 var source_map = undefined;
-var source_id = undefined;
+var sample_nr = undefined;
 var source_intent = undefined;
 var source_tokens = undefined;
 var source_labels = undefined;
@@ -8,21 +8,21 @@ var sample_is_completed = false;
 
 /////////// GET ATIS Sample /////////////////////////////////////////////// 
 function get_atis_sample(callback) {
-    $.ajax({
-        type: 'GET',
-        url: '/sample',
-        success: function (response) {
-            source_id = response.sample_id;
-            source_tokens = response.sample_tokens.split(" ");
-            source_labels = response.sample_labels.split(" ");
-            source_intent = response.sample_intent;
-            callback();
-        },
-        error: function (request, error) {
-            // alert("Request: " + JSON.stringify(request));
-        }
-    });
+    source_tokens = $('#source_tokens span').map(function () {
+        return $(this).text();
+    }).get();
+
+    source_labels = $('#source_labels span').map(function () {
+        return $(this).text();
+    }).get();
+
+    source_intent = $("#source_intent").text();
+
+    sample_nr = document.title;
+
+    callback();
 }
+
 
 /////////// GET SLOT TAGS ///////////////////////////////////////////////// 
 function get_all_slot_tags(callback) {
@@ -45,34 +45,31 @@ function get_all_slot_tags(callback) {
     callback();
 }
 
+
 /////////// TRANSLATE ////////////////////////////////////////////////////
 function translate() {
-    var source_tokens_str = $('#source_tokens').text();
-    source_tokens_str = source_tokens_str.trim();
+    // Get Source Text
+    let source_tokens_tmp = source_tokens;
+    source_tokens_tmp.shift(); // Remove BOS
+    source_tokens_tmp.pop(); // Remove EOS
+    source_tokens_tmp = source_tokens_tmp.join(' ');
 
-    var source_tokens = source_tokens_str.split(' ');
-    source_tokens.shift(); // Remove BOS
-    source_tokens.pop(); // Remove EOS
-    source_tokens = source_tokens.join(' ');
-
-    if (source_tokens) {
+    // Use Google Translate
+    if (source_tokens_tmp) {
         $.ajax({
             type: 'POST',
             url: '/api/translate',
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify({
-                'source_text': source_tokens,
+                'source_text': source_tokens_tmp,
             }),
             success: function (response) {
-
-                $('#translated_text').text(response.translation);
-                $('#target_tokens').val(response.translation);
+                // Display results
+                $('#translated_text').text(response.translation); // display fixed text
+                $('#translated_tokens_input').val(response.translation); // set value to input field
                 $('#translated_div').css('visibility', 'visible');
-                $('#tokens_div').css('visibility', 'visible');
-                $('#translate_button_div').css('display', 'none');
-                $('#annotate_button_div').css('visibility', 'visible');
-                $("#target_tokens").focus();
+                $('#start_button_div').css('display', 'none');
 
             },
             error: function (request, error) {
@@ -82,27 +79,25 @@ function translate() {
     }
 }
 
+
 /////////// ANNOTATE ////////////////////////////////////////////////////// 
 function annotate() {
-    let correct_tokens = $('#target_tokens').val().toLowerCase().replace(/\s+/g, ' ').trim();;
+    let correct_tokens = $('#translated_tokens_input').val().toLowerCase().replace(/\s+/g, ' ').trim();;
+    document.getElementById("annotation_tbody").innerHTML = ""
+    document.getElementById("tags_found_tbody").innerHTML = ""
     create_annotate_table(() => {
         create_source_tag_table(() => {
             window.$('.selectpicker').selectpicker();
-            $('#annotate_button_div').css('display', 'none');
-            $('#tokens_div').css('display', 'none');
-            $('#correct_text').text(correct_tokens);
-            $('#correct_text_div').css('visibility', 'visible');
             $('#annotation_div').css('visibility', 'visible');
-            $('#preview_button_div').css('visibility', 'visible');
-            scrool_to('#annotation_div');
-
+            $('#save_button_div').css('visibility', 'visible');
         });
     });
 }
 
+
 /////////// CREATE ANNOTATE TABLE /////////////////////////////////////////
 function create_annotate_table(callback) {
-    var correct_tokens = $('#target_tokens').val().toLowerCase().replace(/\s+/g, ' ').trim();
+    var correct_tokens = $('#translated_tokens_input').val().toLowerCase().replace(/\s+/g, ' ').trim();
     var arr = correct_tokens.split(" ");
     arr.unshift("BOS");
     arr.push("EOS");
@@ -112,33 +107,41 @@ function create_annotate_table(callback) {
 
         var table_head = `
         <tr>
-            <th scope="row">${index}</th>
-            <td>${item}</td>
-            <td>
+            <th scope="row" class="align-middle">${index}</th>
+            <td class="align-middle">${item}</td>
+            <td class="py-0">
                 <select class="selectpicker" data-size="6" data-live-search="true" tabindex="${index}" id="select_${index}">`;
 
+
         var table_rows = source_map.reduce((result, label_pair) => {
-            if (item === label_pair[0]) { 
-                result = `
-            <option data-tokens="${slot_tags.indexOf(label_pair[1]) + 1}">${label_pair[1]}</option>
-            <option data-tokens="0">O</option>`;
-
-
-            slot_tags.forEach(function (tag, ind, arrr) {
-                var option = ""
-                if (tag === "O" || tag === label_pair[1]) {
-                    // Continue
-                } else {
-                    result = result.concat(`
-            <option data-tokens="${ind + 1}">${tag}</option>`);
+            if (item === label_pair[0]) {
+                if (label_pair[1] != "O") {
+                    result = `
+                <option data-tokens="${slot_tags.indexOf(label_pair[1]) + 1}">${label_pair[1]}</option>
+                <option data-tokens="0">O</option>`;
                 }
-            });
-             }
+                else {
+                    result = `
+                    <option data-tokens="0">O</option>
+                `;
+                }
+
+
+                slot_tags.forEach(function (tag, ind, arrr) {
+                    var option = ""
+                    if (tag === "O" || tag === label_pair[1]) {
+                        // Continue
+                    } else {
+                        result = result.concat(`
+                <option data-tokens="${ind + 1}">${tag}</option>`);
+                    }
+                });
+            }
             return result
-          }, null)
+        }, null)
 
 
-        if(table_rows === null) {
+        if (table_rows === null) {
             table_rows = `
             <option data-tokens="0">O</option>`;
 
@@ -163,6 +166,7 @@ function create_annotate_table(callback) {
 
     callback();
 }
+
 
 /////////// CREATE SOURCE TAG TABLE ///////////////////////////////////////
 function create_source_tag_table(callback) {
@@ -195,75 +199,52 @@ function create_source_tag_table(callback) {
     callback();
 }
 
-/////////// PREVIEW ///////////////////////////////////////////////////////
-function preview() {
 
+///////////// GET DATE FROM ANNOTATE TABLE ///////////////////////////////
+function get_annotated_data(){
     var annotation_tbody = document.querySelector("#annotation_tbody");
     var data = annotation_tbody.querySelectorAll('select');
-    var preview_labels = [];
+    var labels = [];
 
     for (var i = 0; i < data.length; i++) {
         var select_picker = data[i];
-        preview_labels.push(select_picker.value);
+        labels.push(select_picker.value);
     }
 
-    var correct_tokens = "".concat("BOS ", $('#target_tokens').val(), " EOS");
-    var preview_tokens = correct_tokens.split(" ");
+    var correct_tokens = "".concat("BOS ", $('#translated_tokens_input').val(), " EOS");
+    var tokens = correct_tokens.split(" ");
 
-    preview = preview_tokens.map(function (e, i) {
-        return [e, preview_labels[i]];
+    annotated_data = tokens.map(function (e, i) {
+        return [e, labels[i]];
     });
 
-    // Clear data if there is any
-    document.getElementById("preview_tokens").innerHTML = "";
-    document.getElementById("preview_labels").innerHTML = "";
-
-    // Populate with data
-    preview.forEach(function (item, index, arr) {
-        document.getElementById("preview_tokens").innerHTML += `<span class="${index + source_length}">${item[0]} </span>`;
-        document.getElementById("preview_labels").innerHTML += `<span class="${index + source_length}">${item[1]} </span>`;
-    });
-
-    refreash_hover_effect();
-
-    $('#preview_div').css('visibility', 'visible');
-    $('#save_button_div').css('visibility', 'visible');
+    return annotated_data;
 }
 
-/////////// Hover //////////////////////////////////////////////////////////////
-function refreash_hover_effect() {
-    // TODO: Fix Hover effect from ATIS DATA after Preview Card has been displayed.
-    // Bug: ATIS Data Tokens wont toggle back to being normal after leaving hover 
 
-    $(function () {
-        $("p>span").hover(function () {
-            var id = $(this).attr('class');
-            $("." + id).toggleClass('text-primary');
-        }, function () {
-            var id = $(this).attr('class');
-            $("." + id.split(" ")[0]).toggleClass('text-primary');
-        });
-    });
-}
-
+/////////// SAVE //////////////////////////////////////////////////////////
 function save() {
-    if ($('#is_completed_checkbox').is(":checked")) {
-        sample_is_completed = true;
-    }
-    var preview_tokens = $("#preview_tokens").text().trim();
-    var preview_labels = $("#preview_labels").text().trim();
-    var preview_intent = $("#preview_intent").text().trim();
+    data = get_annotated_data();
+
+    tokens = [];
+    labels = [];
+    
+    data.forEach(function (item, index, arr) {
+        tokens.push(item[0]);
+        labels.push(item[1]);
+    });
+
     $.ajax({
         type: 'POST',
-        url: '/sample',
+        url: `/api/samples/${sample_nr}`,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         data: JSON.stringify({
-            "sample_id": source_id,
-            "sample_tokens": preview_tokens,
-            "sample_labels": preview_labels,
+            "sample_id": sample_nr,
+            "sample_tokens": tokens.join(" ").trim(),
+            "sample_labels": labels.join(" ").trim(),
             "sample_intent": source_intent,
-            "sample_is_completed": sample_is_completed,
+            "sample_is_completed": false,
         }),
         success: function (response) {
             if (response.success) {
@@ -285,18 +266,8 @@ function save() {
             );
         }
     });
-
-
 }
 
-/////////// Scroll to Tag //////////////////////////////////////////////////////////////
-function scrool_to(tag) {
-    var position = $(tag).offset().top;
-
-    $("body, html").animate({
-        scrollTop: position
-    });
-}
 
 /////////// MAIN //////////////////////////////////////////////////////////////
 $('document').ready(function () {
@@ -309,27 +280,14 @@ $('document').ready(function () {
 
         source_length = source_map.length;
 
-        // Populate Source Data
-        source_map.forEach(function (item, index, arr) {
-            document.getElementById("source_tokens").innerHTML += `<span class="${index}">${item[0]} </span>`;
-            document.getElementById("source_labels").innerHTML += `<span class="${index}">${item[1]} </span>`;
-        });
-
-        refreash_hover_effect();
-
-        document.getElementById("source_intent").innerHTML = source_intent;
-        document.getElementById("preview_intent").innerHTML = source_intent;
-
         // Map Buttons
-        document.getElementById("translate_button").addEventListener("click", translate, false);
-        document.getElementById("annotate_button").addEventListener("click", annotate, false);
-        document.getElementById("preview_button").addEventListener("click", preview, false);
+        document.getElementById("start_button").addEventListener("click", translate, false);
+        document.getElementById("label_button").addEventListener("click", annotate, false);
         document.getElementById("save_button").addEventListener("click", save, false);
 
         // Get Available Slot Tags
         get_all_slot_tags(() => {
             $('#main_content_div').css('visibility', 'visible');
-            scrool_to('#main_content_div');
         });
     });
 });

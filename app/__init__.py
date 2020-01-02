@@ -1,25 +1,27 @@
 
 import os
 
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort, json
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_fontawesome import FontAwesome
 
 from config import Config
-from . import repository as repo
 from . import google
-
-db = SQLAlchemy()
-from app.models import Source, Target, Label
 
 def create_app(test_config=None):
     """create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config)
-    db = SQLAlchemy(app)
+    from .database import db
+    db.init_app(app)
+    from .models.source import Source
+    from .models.target import Target
+    from .models.intent import Intent
+    from .models.label import Label
     migrate = Migrate(app, db)
     fa = FontAwesome(app)
+
     # ======== Routing ============================= #
     # -------- Home -------------------------------- #
     @app.route('/', methods=['GET'])
@@ -95,23 +97,34 @@ def create_app(test_config=None):
         
  
     # -------- Samples -------------------------------- #
-    @app.route('/api/samples/<int:sample_id>', methods=['GET'])
+    @app.route('/api/samples/<int:sample_id>', methods=['GET', 'POST'])
     def get_sample(sample_id):
-        source_sample = Source.query.get(sample_id)
-        if not source_sample:
-            abort(404)
-        
-        target_sample = Target.query.get(sample_id)
-        if not target_sample:
-            abort(404)
-        
-        return jsonify(
-            {
-                "id": sample_id, 
-                "source": source_sample.serialize(), 
-                "target": target_sample.serialize(),
-            } 
-        )
+        if request.method == "GET":
+            source_sample = Source.query.get(sample_id)
+            if not source_sample:
+                abort(404)
+            
+            target_sample = Target.query.get(sample_id)
+            if not target_sample:
+                abort(404)
+            
+            return jsonify(
+                {
+                    "id": sample_id, 
+                    "source": source_sample.serialize(), 
+                    "target": target_sample.serialize(),
+                } 
+            )
+        elif request.method == 'POST':
+            target_sample = Target.query.get(sample_id)
+            target_sample.tokens = request.json['sample_tokens']
+            target_sample.labels = request.json['sample_labels']
+            target_sample.is_completed = request.json['sample_is_completed']
+            db.session.commit()
+            return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+
+            
+
 
     # -------- Translate -------------------------------- #
     @app.route('/api/translate', methods=['POST'])

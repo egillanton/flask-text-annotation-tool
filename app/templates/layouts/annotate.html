@@ -1,36 +1,100 @@
 {% extends "base.html" %}
 
-{% block title %}
-Home - {{ super() }}
-{% endblock %}
-
+{% block title %}{{ data.id }}{% endblock %}
 
 {% block content %}
-<div class="container mt-3" id="main_content_div" style="visibility:hidden;">
-    <!-- HEADER -->
-    <h1 class="text-center">Text Annotation Tool</h1>
-    <!-- ATIS DATA -->
+<div class="container mt-3">
+    <h2 class="text-center">Sample # {{ data.id }}
+        {% if data.target.is_completed %}
+        <span class="badge badge-success">
+            <i class="fas fa-check text-white"></i>
+            Completed
+        </span>
+        {% elif (not data.target.is_completed and data.target.tokens and data.target.tokens|length > 0 )  %}
+        <span class="badge badge-warning">
+            <i class="fas fa-lightbulb"></i>
+            Uncompleted
+        </span>
+        {% else %}
+        <span class="badge badge-primary">
+            <i class="fas fa-star text-white"></i>
+            New
+        </span>
+        {% endif %}
+    </h2>
+    <!-- Source DATA -->
     <div class="card mb-3">
         <div class="card-header">
-            ATIS Data
+            Source: ATIS Data
         </div>
         <div class="card-body">
             <h5 class="card-title">Tokens</h5>
             <p class="card-text border-bottom" id="source_tokens">
+                {% if data.source.tokens %}
+                {% for item in data.source.tokens.split(" ") %}
+                <span class="{{loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
             </p>
             <h5 class="card-title">IOB labels</h5>
             <p class="card-text border-bottom" id="source_labels">
+                {% if data.source.labels %}
+                {% for item in data.source.labels.split(" ") %}
+                <span class="{{loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
             </p>
             <h5 class="card-title">Intent</h5>
             <p class="card-text border-bottom" id="source_intent">
+                {{data.source.intent}}
             </p>
         </div>
     </div>
 
-    <!-- TRANSLATE BUTTON -->
-    <div class="row mb-3" id="translate_button_div">
+    <!-- TARGET DATA -->
+    <div class="card mb-3">
+        <div class="card-header">
+            Target: ICE-ATIS Data
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Tokens</h5>
+            <p class="card-text border-bottom" id="target_tokens">
+                {% if data.target and data.target.tokens %}
+                {% for item in data.target.tokens.split() %}
+                <span class="{{data.source.tokens|length + loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">IOB labels</h5>
+            <p class="card-text border-bottom" id="target_labels">
+                {% if data.target and data.target.labels %}
+                {% for item in data.target.labels.split() %}
+                <span class="{{data.source.tokens|length + loop.index}}">{{item}}</span>
+                {% endfor %}
+                {% endif %}
+            </p>
+            <h5 class="card-title">Intent</h5>
+            <p class="card-text border-bottom" id="target_intent">
+                {% if data.target %}
+                {{data.target.intent}}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    
+    
+    <!-- ANNOTATE SOURCE BUTTON -->
+    <div class="row mb-3" id="start_button_div">
         <div class="col-12 level">
-            <button type="button" id="translate_button" class="btn btn-primary float-right">Translate</button>
+            <!-- Default unchecked -->
+            {% if not data.target.is_completed %}
+            <button type="button" id="start_button" class="btn btn-success float-right">Start Annotating</button>
+            {% endif %}
+
+            {% if (not data.target.is_completed and data.target.tokens and data.target.tokens|length > 0 )  %}
+            <button type="button" id="confirm_button" class="btn btn-success float-right">Mark As Completed</button>
+            {% endif %}
         </div>
     </div>
 
@@ -44,46 +108,21 @@ Home - {{ super() }}
                 </div>
                 <div class="card-body">
                     <p class="card-text" id="translated_text"></p>
+                    <label for="translated_tokens_input">Please correct translation if needed:</label>
+                    <div class="input-group mb-3">
+                        <input type="text" id="translated_tokens_input" class="form-control"
+                            name="translated_tokens_input" autocomplete="off">
+                    </div>
+                    <button type="button" id="label_button" class="btn btn-primary float-right">Label Tokens</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- TOKENS -->
-    <div class="row mb-3" id="tokens_div" style="visibility:hidden;">
-        <div class="col-12">
-            <label for="target_tokens">Please correct if needed:</label>
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" name="target_tokens" id="target_tokens">
-            </div>
-        </div>
-    </div>
-
-    <!-- ANNOTATE BUTTON -->
-    <div class="row mb-3" id="annotate_button_div" style="visibility:hidden;">
-        <div class="col-12 level">
-            <button type="button" id="annotate_button" class="btn btn-primary float-right">Annotate</button>
-        </div>
-    </div>
-
-    <!-- CORRECT TEXT -->
-    <div class="row mb-3" id="correct_text_div" style="visibility:hidden;">
-        <div class="col-12">
-            <div class="card  mb-3">
-                <div class="card-header">
-                    Tokens
-                </div>
-                <div class="card-body">
-                    <p class="card-text" id="correct_text"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ANNOTATION  -->
+    <!-- ANNOTATION TABLES -->
     <div class="row mb-3" id="annotation_div" style="visibility:hidden;">
         <div class="col-6">
-            <table class="table border">
+            <table class="table border z-depth-1">
                 <thead class="thead-light">
                     <tr>
                         <th scope="col">#</th>
@@ -96,7 +135,7 @@ Home - {{ super() }}
             </table>
         </div>
         <div class="col-6">
-            <table class="table border">
+            <table class="table border z-depth-1">
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">#</th>
@@ -111,56 +150,27 @@ Home - {{ super() }}
         </div>
     </div>
 
-    <!-- PREVIEW BUTTON -->
-    <div class="row mb-3" id="preview_button_div" style="visibility:hidden;">
-        <div class="col-12 level">
-            <button type="button" id="preview_button" class="btn btn-primary float-right">Preview</button>
-        </div>
-    </div>
-
-    <!-- PREVIEW DATA -->
-    <div class="card mb-3" id="preview_div" style="visibility:hidden;">
-        <div class="card-header">
-            ICE-ATIS Data
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Tokens</h5>
-            <p class="card-text border-bottom" id="preview_tokens">
-            </p>
-            <h5 class="card-title">IOB labels</h5>
-            <p class="card-text border-bottom" id="preview_labels">
-            </p>
-            <h5 class="card-title">Intent</h5>
-            <p class="card-text border-bottom" id="preview_intent">
-            </p>
-        </div>
-    </div>
-
-
     <!-- SAVE BUTTON -->
-    <div class="row mb-3" id="save_button_div" style="visibility:hidden;">
-        <div class="col-12 level">
+    <div class="row  mb-3" id="save_button_div" style="visibility:hidden;">
+        <div class="col-12 level" style="height: 50px;">
             <button type="button" id="save_button" class="btn btn-success float-right">
-                <span>Confirm and Save</span>
+                <span>Save</span>
                 <span class="icon">
                     <i class="fas fa-save"></i>
                 </span>
             </button>
-            <div class="form-check mr-sm-2 float-right">
-                <input class="form-check-input" type="checkbox" id="is_completed_checkbox">
-                <label class="form-check-label" for="is_completed_checkbox">
-                    Is Completed
-                </label>
-            </div>
         </div>
     </div>
 </div>
 
-
-
-
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-{% endblock %}
+<script src="{{ url_for('static', filename='js/annotate.js') }}"></script>
+<script src="{{ url_for('static', filename='js/hover.js') }}"></script>
+<script>
+    $('document').ready(function () {
+        apply_hover_effect();
+    });
+</script>
+{% endblock %}Is Completed
