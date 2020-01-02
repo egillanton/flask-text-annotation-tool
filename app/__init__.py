@@ -47,7 +47,7 @@ def create_app(test_config=None):
             target = Target.query.filter(Target.tokens == None).first()
 
         elif preference.lower() == "uncompleted":
-            target =  Target.query.filter(Target.tokens != None).filter(Target.is_completed == False).first()
+            target = Target.query.filter(Target.is_completed == False, Target.tokens != None).first()
 
         if target:
             data = get_sample(target.source.id)
@@ -66,7 +66,7 @@ def create_app(test_config=None):
     def get_stats():
         target_samples = len(Target.query.all())
         remaining_target_samples = len(Target.query.filter(Target.is_completed == False).all())
-        uncompleted_target_samples = len(Target.query.filter(Target.is_completed == False and Target.tokens != None).all())
+        uncompleted_target_samples = len(Target.query.filter(Target.is_completed == False, Target.tokens != None).all())
 
         return jsonify(
             total= target_samples,
@@ -116,10 +116,17 @@ def create_app(test_config=None):
                 } 
             )
         elif request.method == 'POST':
-            target_sample = Target.query.get(sample_id)
-            target_sample.tokens = request.json['sample_tokens']
-            target_sample.labels = request.json['sample_labels']
-            target_sample.is_completed = request.json['sample_is_completed']
+
+            is_completed = request.json['sample_is_completed']
+            if is_completed:
+                target_sample = Target.query.get(sample_id)
+                target_sample.is_completed = request.json['sample_is_completed']
+            else:
+                target_sample = Target.query.get(sample_id)
+                target_sample.tokens = request.json['sample_tokens']
+                target_sample.labels = request.json['sample_labels']
+                target_sample.is_completed = request.json['sample_is_completed']
+                
             db.session.commit()
             return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 

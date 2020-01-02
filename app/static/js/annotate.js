@@ -268,6 +268,39 @@ function save() {
     });
 }
 
+/////////// CONFRIM //////////////////////////////////////////////////////////
+function confirm() {
+    $.ajax({
+        type: 'POST',
+        url: `/api/samples/${sample_nr}`,
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify({
+            "sample_id": sample_nr,
+            "sample_is_completed": true,
+        }),
+        success: function (response) {
+            if (response.success) {
+                Swal.fire(
+                    'Good Job!',
+                    'Your sample has been marked completed!',
+                    'success'
+                ).then((result) => {
+                    document.location.reload(true);
+                });
+            }
+        },
+        error: function (request, error) {
+            // alert("Request: " + JSON.stringify(request));
+            Swal.fire(
+                'Error!',
+                'Your sample has not been updated!',
+                'warning'
+            );
+        }
+    });
+}
+
 
 /////////// MAIN //////////////////////////////////////////////////////////////
 $('document').ready(function () {
@@ -284,6 +317,7 @@ $('document').ready(function () {
         document.getElementById("start_button").addEventListener("click", translate, false);
         document.getElementById("label_button").addEventListener("click", annotate, false);
         document.getElementById("save_button").addEventListener("click", save, false);
+        document.getElementById("confirm_button").addEventListener("click", confirm, false);
 
         // Get Available Slot Tags
         get_all_slot_tags(() => {
