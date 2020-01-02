@@ -1,7 +1,7 @@
 
 import os
 
-from flask import Flask, render_template, request, jsonify, abort, json
+from flask import Flask, render_template, request, jsonify, abort, json, redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_fontawesome import FontAwesome
@@ -51,9 +51,11 @@ def create_app(test_config=None):
 
         if target:
             data = get_sample(target.source.id)
-            return render_template('layouts/annotate.html', data=data.json)
-        else:
-            return render_template('layouts/annotate.html')
+            if data:
+                return render_template('layouts/annotate.html', data=data.json)
+
+        return redirect("/", code=302)
+
 
     @app.route('/annotate/<int:sample_id>', methods=['GET'])
     def annotate_int(sample_id):
