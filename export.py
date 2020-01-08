@@ -5,7 +5,6 @@ app.app_context().push()
 from app.models.source import Source
 from app.models.target import Target
 from app.models.intent import Intent
-from app.models.label import Label
 
 # -------- Target Files -------------------------------- #
 test_fout =  './data/target/atis.test.w-intent.iob'
@@ -18,11 +17,11 @@ def export():
 
     with open(test_fout,'w') as fout:
         for sample in completed_test_set:
-            fout.write(f'{sample.tokens}\t{sample.label}\t{sample.intent.intent}\n')
+            fout.write(f'{sample.tokens}\t{sample.labels}\t{sample.intent.intent}\n')
 
     with open(train_fout,'w') as fout:
         for sample in completed_training_set:
-            fout.write(f'{sample.tokens}\t{sample.label}\t{sample.intent.intent}\n')
+            fout.write(f'{sample.tokens}\t{sample.labels}\t{sample.intent.intent}\n')
 
 
 if __name__ == "__main__":
