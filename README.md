@@ -111,9 +111,23 @@ $ git commit -am "make it better"
 $ git push heroku master
 ```
 
+
+**Set-Up Google AutoML**
+```bash
+$ export GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
+$ gcloud auth login
+$ gcloud config set project ice-atis
+$ gcloud auth activate-service-account translate@ice-atis.iam.gserviceaccount.com --key-file=./credentials.json --project=translate
+$ gcloud projects add-iam-policy-binding translate --member translate@ice-atis.iam.gserviceaccount.com
+```
+
 ## License
 This project is licensed under the Apache License, Version 2.0 - see the [LICENSE](LICENSE) file for details.
 
 <p align="center">
 🌟 PLEASE STAR THIS REPO IF YOU FOUND SOMETHING INTERESTING 🌟
 </p>
+
+
+https://stackoverflow.com/questions/55176012/google-api-core-exceptions-permissiondenied-403-the-caller-does-not-have-permis
+
