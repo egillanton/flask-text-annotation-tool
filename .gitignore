@@ -1,6 +1,6 @@
 venv/
 .vscode/
-
+credentials.json
 app.db
 app.db-journal
 data/target/
