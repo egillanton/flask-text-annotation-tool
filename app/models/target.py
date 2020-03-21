@@ -13,7 +13,7 @@ class Target(Base):
     is_completed = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
-        return f'Tokens: {self.Tokens}'
+        return f'Id:{self.id}\tTokens: {self.tokens}\tLabels: {self.labels}'
 
     def serialize(self):
         return {
