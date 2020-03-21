@@ -88,9 +88,7 @@
     <div class="row mb-3" id="start_button_div">
         <div class="col-12 level">
             <!-- Default unchecked -->
-            {% if not data.target.is_completed %}
             <button type="button" id="start_button" class="btn btn-success float-right">Start Annotating</button>
-            {% endif %}
 
             {% if (not data.target.is_completed and data.target.tokens and data.target.tokens|length > 0 )  %}
             <button type="button" id="confirm_button" class="btn btn-success float-right">Mark As Completed</button>
