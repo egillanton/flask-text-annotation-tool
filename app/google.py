@@ -29,6 +29,6 @@ translator = Translator()
 
 
 def get_translation(source_text):
-    translation = translator.translate(text=source_text, src='en', dest='is')
+    translation = translator.translate(text=source_text, src='en', dest='es')
     return translation.text
 
